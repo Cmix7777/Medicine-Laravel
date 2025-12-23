@@ -13,6 +13,7 @@ class MedicineSeeder extends Seeder
         $medicines = [
             [
                 'name' => 'Парацетамол',
+                'image_url' => 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
                 'description' => 'Жаропонижающее и обезболивающее средство',
                 'price' => 150.00,
                 'quantity' => 50,
@@ -22,6 +23,7 @@ class MedicineSeeder extends Seeder
             ],
             [
                 'name' => 'Ибупрофен',
+                'image_url' => 'https://images.unsplash.com/photo-1550572017-edd951b55104?w=400&h=400&fit=crop',
                 'description' => 'Противовоспалительное и обезболивающее',
                 'price' => 180.00,
                 'quantity' => 35,
@@ -31,6 +33,7 @@ class MedicineSeeder extends Seeder
             ],
             [
                 'name' => 'Аспирин',
+                'image_url' => 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
                 'description' => 'Антиагрегант, жаропонижающее',
                 'price' => 120.00,
                 'quantity' => 60,
@@ -40,6 +43,7 @@ class MedicineSeeder extends Seeder
             ],
             [
                 'name' => 'Амоксициллин',
+                'image_url' => 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&h=400&fit=crop',
                 'description' => 'Антибиотик широкого спектра действия',
                 'price' => 250.00,
                 'quantity' => 25,
@@ -490,7 +494,26 @@ class MedicineSeeder extends Seeder
             ],
         ];
 
-        foreach ($medicines as $medicine) {
+        // Массив локальных изображений из папки img
+        $images = [
+            '/img/filec.png',
+            '/img/flec.png',
+            '/img/folec.png',
+            '/img/slec.png',
+            '/img/tlec.png',
+        ];
+
+        // Перемешиваем массив для случайного распределения
+        shuffle($images);
+
+        foreach ($medicines as $index => $medicine) {
+            // Если image_url не указан, добавляем случайное изображение из локальных
+            if (!isset($medicine['image_url']) || empty($medicine['image_url'])) {
+                $medicine['image_url'] = $images[$index % count($images)];
+            } else {
+                // Если указано внешнее изображение, заменяем на локальное случайное
+                $medicine['image_url'] = $images[$index % count($images)];
+            }
             Medicine::create($medicine);
         }
     }

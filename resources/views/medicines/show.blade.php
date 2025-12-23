@@ -13,10 +13,9 @@
     <div class="detail-layout">
         <div class="detail-visual">
             <div class="visual-box">
-                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-                    <rect width="120" height="120" rx="20" fill="var(--gold)" opacity="0.1"/>
-                    <path d="M60 30L70 50H90L75 65L80 90L60 75L40 90L45 65L30 50H50L60 30Z" fill="var(--gold)" opacity="0.3"/>
-                </svg>
+                <img src="{{ $medicine->image_url ?? 'https://via.placeholder.com/400x400/1a1a1a/FFD700?text=Medicine' }}" 
+                     alt="{{ $medicine->name }}" 
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400/1a1a1a/FFD700?text=Medicine';">
             </div>
             <div class="visual-badge">В наличии</div>
         </div>
@@ -73,7 +72,38 @@
             </div>
 
             <div class="detail-actions">
-                <button class="btn" style="width: 100%;">Купить</button>
+                @if($isExpired)
+                    <div class="expired-warning">
+                        <span>⚠ Срок годности истек</span>
+                    </div>
+                @elseif($medicine->quantity <= 0)
+                    <div class="expired-warning">
+                        <span>⚠ Нет в наличии</span>
+                    </div>
+                @else
+                    <form action="{{ route('cart.add', $medicine) }}" method="POST" style="width: 100%;">
+                        @csrf
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                            <label for="quantity" style="color: rgba(255, 255, 255, 0.7);">Количество:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $medicine->quantity }}" 
+                                style="width: 80px; padding: 8px; background: var(--gray); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; color: var(--white);">
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Добавить в корзину</button>
+                    </form>
+                @endif
+
+                @auth
+                    @if(Auth::user()->isAdmin())
+                    <div style="display: flex; gap: 10px; width: 100%; margin-top: 15px;">
+                        <a href="{{ route('medicines.edit', $medicine) }}" class="btn btn-secondary" style="flex: 1;">Редактировать</a>
+                        <form action="{{ route('medicines.destroy', $medicine) }}" method="POST" style="flex: 1;" onsubmit="return confirm('Вы уверены, что хотите удалить это лекарство?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn" style="width: 100%; background: #ef4444; border-color: #ef4444;">Удалить</button>
+                        </form>
+                    </div>
+                    @endif
+                @endauth
             </div>
         </div>
     </div>
@@ -118,6 +148,15 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .visual-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
 
     .visual-icon {
@@ -273,6 +312,19 @@
     .detail-actions .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .expired-warning {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        color: #ef4444;
+        font-weight: 500;
+        width: 100%;
     }
 
     @media (max-width: 968px) {

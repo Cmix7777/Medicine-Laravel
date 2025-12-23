@@ -30,7 +30,21 @@
                 <nav>
                     <a href="{{ route('home') }}">Главная</a>
                     <a href="{{ route('medicines.index') }}">Каталог</a>
+                    <a href="{{ route('cart.index') }}">
+                        Корзина
+                        @php
+                            $cartCount = count(Session::get('cart', []));
+                        @endphp
+                        @if($cartCount > 0)
+                            <span style="background: var(--gold); color: var(--black); padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-left: 5px;">{{ $cartCount }}</span>
+                        @endif
+                    </a>
                     @auth
+                        <a href="{{ route('profile.show') }}">Профиль</a>
+                        <a href="{{ route('orders.index') }}">Заказы</a>
+                        @if(Auth::user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}" style="color: var(--gold); font-weight: 600;">Админка</a>
+                        @endif
                         <span>{{ Auth::user()->name }}</span>
                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                             @csrf
@@ -45,6 +59,20 @@
         </header>
 
         <div class="content">
+            @if(session('success'))
+                <div class="flash-message flash-success">
+                    <span>{{ session('success') }}</span>
+                    <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="flash-message flash-error">
+                    <span>{{ session('error') }}</span>
+                    <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            @endif
+
             @yield('content')
         </div>
 

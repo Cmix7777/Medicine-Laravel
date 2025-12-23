@@ -62,11 +62,11 @@
         </div>
         <div class="categories-masonry">
             @foreach($categories as $index => $category)
-                <a href="{{ route('medicines.index') }}?category={{ urlencode($category) }}" class="category-brick" style="--delay: {{ $index * 0.1 }}s">
+                <a href="{{ route('medicines.index') }}?category={{ urlencode($category->category) }}" class="category-brick" style="--delay: {{ $index * 0.1 }}s">
                     <div class="brick-number">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                     <div class="brick-content">
-                        <div class="brick-title">{{ $category }}</div>
-                        <div class="brick-count">{{ $featuredMedicines->where('category', $category)->count() }} товаров</div>
+                        <div class="brick-title">{{ $category->category }}</div>
+                        <div class="brick-count">{{ $category->total }} товаров</div>
                     </div>
                     <div class="brick-arrow">→</div>
                 </a>
@@ -84,6 +84,13 @@
         <div class="products-showcase">
             @foreach($featuredMedicines as $index => $medicine)
                 <div class="product-tile" style="--index: {{ $index }}">
+                    <div class="tile-image">
+                        @if($medicine->image_url)
+                            <img src="{{ $medicine->image_url }}" alt="{{ $medicine->name }}" onerror="this.src='https://via.placeholder.com/300x300/1a1a1a/FFD700?text=Medicine'">
+                        @else
+                            <img src="https://via.placeholder.com/300x300/1a1a1a/FFD700?text=Medicine" alt="{{ $medicine->name }}">
+                        @endif
+                    </div>
                     <div class="tile-header">
                         <div class="tile-badge">В наличии</div>
                         <div class="tile-category">{{ $medicine->category ?? 'Без категории' }}</div>
@@ -478,6 +485,29 @@
         border-color: var(--gold);
         transform: translateY(-8px);
         box-shadow: 0 20px 60px rgba(255, 215, 0, 0.15);
+    }
+
+    .tile-image {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-tile:hover .tile-image img {
+        transform: scale(1.05);
     }
 
     .tile-header {
